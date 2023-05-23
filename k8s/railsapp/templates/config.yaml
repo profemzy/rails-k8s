@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appConfigMap.name }}
+data:
+  POSTGRES_HOST: "{{ .Values.appConfigMap.dbHost }}"
+  RAILS_ENV: "{{ .Values.appConfigMap.environment }}"

@@ -1,0 +1,19 @@
+{{/*apiVersion: networking.k8s.io/v1*/}}
+{{/*kind: Ingress*/}}
+{{/*metadata:*/}}
+{{/*  name: {{ include "railsapp.fullname" . }}*/}}
+{{/*  annotations:*/}}
+{{/*    kubernetes.io/ingress.class: "gce"*/}}
+{{/*    kubernetes.io/ingress.global-static-ip-name: "ingress-webapps"*/}}
+{{/*spec:*/}}
+{{/*  rules:*/}}
+{{/*    - host: {{.Values.appHost}}*/}}
+{{/*      http:*/}}
+{{/*        paths:*/}}
+{{/*          - path: "/*"*/}}
+{{/*            pathType: ImplementationSpecific*/}}
+{{/*            backend:*/}}
+{{/*              service:*/}}
+{{/*                name: {{ include "railsapp.fullname" . }}*/}}
+{{/*                port:*/}}
+{{/*                  number:  {{.Values.service.port}}*/}}

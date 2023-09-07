@@ -2,10 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 image:
-  repository: profemzy/rails_docker_compose_psql-demo-web
+  repository: profemzy/rails-k8s-demo-web
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -23,9 +23,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+appKsaName: rails-app
+appHost: ops.infotitans.com
 appConfigMap:
   name: app-config
-  dbHost: 10.104.11.202
+  dbHost: db-proxy-pgbouncer
   environment: production
 
 appSecret:
@@ -45,7 +47,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: LoadBalancer
+  type: NodePort
   port: 3000
 
 ingress:

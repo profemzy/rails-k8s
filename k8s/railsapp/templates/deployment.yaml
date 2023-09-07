@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "railsapp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "railsapp.labels" . | nindent 4 }}
 spec:
@@ -20,6 +21,7 @@ spec:
       labels:
         {{- include "railsapp.selectorLabels" . | nindent 8 }}
     spec:
+{{/*      serviceAccountName: {{ .Values.appKsaName }}*/}}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -37,6 +39,13 @@ spec:
                 name: "{{ .Values.appSecret.name }}"
             - configMapRef:
                 name: "{{ .Values.appConfigMap.name}}"
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /posts
+              port: {{.Values.service.port}}
+            initialDelaySeconds: 10
+            periodSeconds: 5
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -27,7 +27,7 @@ appKsaName: rails-app
 appHost: ops.infotitans.com
 appConfigMap:
   name: app-config
-  dbHost: db-proxy-pgbouncer
+  dbHost: db-proxy-pgbouncer-pgbouncer-new.cd-demo.svc.cluster.local
   environment: production
 
 appSecret:

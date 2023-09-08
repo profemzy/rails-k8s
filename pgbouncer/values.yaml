@@ -1,0 +1,57 @@
+ppVersion: 1.18.0
+# Deployment values for pgbouncer
+replicaCount: 1
+internalPort: 5432
+antiAffinity: soft
+# optionally define nodeAffinity
+nodeAffinity: {}
+# optionally define tolerations
+tolerations: []
+
+budget:
+  # PodDisruptionBudget spec.minAvailable
+  minAvailable: 0
+
+image:
+  repository: edoburu/pgbouncer
+  tag: 1.18.0
+  pullPolicy: Always
+
+# DEMO CREDS PLEASE  REPLACE
+databases:
+  "postgres":
+    host: my-pg-db-postgresql
+    port: 5432
+
+users:
+  postgres: tUoWEwghlb
+
+settings:
+  auth_type: md5
+
+connectionLimits:
+  maxClientConn: 3000
+  defaultPoolSize: 600
+  serverIdleTimeout: 240
+
+spec:
+  # Add custom pod labels here
+  labels: {}
+  annotations: {}
+
+# Add custom deployment labels here
+labels: {}
+nodeSelector:
+  workload-type: chr
+
+
+# add key: value map entries to customSettings to be added to pbgouncer.ini [pgbouncer] section
+customSettings: {}
+
+# Service configuration
+service:
+  enabled: true
+  type: ClusterIP
+  name: ""
+  port: 5432
+  annotations: {}

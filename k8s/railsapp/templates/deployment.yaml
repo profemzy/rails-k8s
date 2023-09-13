@@ -17,6 +17,7 @@ spec:
     blueGreen:
       activeService: {{ include "railsapp.fullname" . }}
       previewService: {{ include "railsapp.fullname" . }}-preview
+      autoPromotionEnabled: false
   template:
     metadata:
     {{- with .Values.podAnnotations }}

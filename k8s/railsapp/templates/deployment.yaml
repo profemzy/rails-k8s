@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: Rollout
 metadata:
   name: {{ include "railsapp.fullname" . }}
   namespace: {{ .Release.Namespace }}
@@ -9,58 +9,70 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
-  selector:
-    matchLabels:
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { }
+        - setWeight: 40
+        - pause: { duration: 10 }
+        - setWeight: 60
+        - pause: { duration: 10 }
+        - setWeight: 80
+        - pause: { duration: 10 }
+  revisionHistoryLimit: 2
+    selector:
+      matchLabels:
       {{- include "railsapp.selectorLabels" . | nindent 6 }}
-  template:
-    metadata:
+    template:
+      metadata:
       {{- with .Values.podAnnotations }}
-      annotations:
+        annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      labels:
+        labels:
         {{- include "railsapp.selectorLabels" . | nindent 8 }}
-    spec:
+      spec:
 {{/*      serviceAccountName: {{ .Values.appKsaName }}*/}}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
+        imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      securityContext:
+        securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
+        containers:
+          - name: {{ .Chart.Name }}
+            securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - secretRef:
-                name: "{{ .Values.appSecret.name }}"
-            - configMapRef:
-                name: "{{ .Values.appConfigMap.name}}"
-          readinessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /posts
-              port: {{.Values.service.port}}
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          resources:
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            envFrom:
+              - secretRef:
+                  name: "{{ .Values.appSecret.name }}"
+              - configMapRef:
+                  name: "{{ .Values.appConfigMap.name}}"
+            readinessProbe:
+              httpGet:
+                scheme: HTTP
+                path: /posts
+                port: {{.Values.service.port}}
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            ports:
+              - name: http
+                containerPort: {{ .Values.service.port }}
+                protocol: TCP
+            resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
-      nodeSelector:
+        nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
-      affinity:
+        affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.tolerations }}
-      tolerations:
+        tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

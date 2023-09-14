@@ -3,8 +3,10 @@ ARG RUBY_VERSION=3.2.2
 FROM ruby:$RUBY_VERSION
 
 # Install libvips for Active Storage preview support
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
+
 RUN apt-get update -qq && \
-    apt-get install -y build-essential libvips bash bash-completion libffi-dev tzdata postgresql nodejs npm yarn && \
+    apt-get install -y build-essential libvips bash bash-completion libffi-dev tzdata postgresql nodejs  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
 
@@ -28,7 +30,7 @@ COPY . .
 RUN bundle exec bootsnap precompile --gemfile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
+# RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
